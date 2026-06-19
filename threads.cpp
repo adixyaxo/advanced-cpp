@@ -1,22 +1,33 @@
 #include <iostream>
 #include <thread>
-using namespace std;
-static bool s_finished = false;
-void do_work(){
-  int i = 0;
-  while (!s_finished)
-  {
-    cout << i << endl;
-    this_thread::sleep_for(1s);
-    i++;
-  }
+#include <atomic>
+#include <chrono>
 
+using namespace std::chrono;
+
+static std::atomic<bool> s_finished = false;
+
+void do_work()
+{
+    int i = 0;
+
+    while (!s_finished)
+    {
+        std::cout << i << std::endl;
+        std::this_thread::sleep_for(1s);
+        i++;
+    }
 }
 
-int main() {
-  thread worker(do_work);
-  cin.get();
-  s_finished= true;
-  worker.join();
-  return 0;
+int main()
+{
+
+    std::thread worker(do_work);
+    std::thread worker2(do_work);
+    std::cin.get();
+    s_finished = true;
+
+    worker.join();
+    worker2.join();
+    return 0;
 }
